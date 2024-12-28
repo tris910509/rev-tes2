@@ -13,7 +13,7 @@
         }
 
         #app {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 20px auto;
             padding: 20px;
             background: white;
@@ -71,24 +71,6 @@
         .hidden {
             display: none;
         }
-
-        #struk {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-        }
-
-        @media print {
-            nav, form {
-                display: none;
-            }
-
-            #struk {
-                border: none;
-                background: white;
-            }
-        }
     </style>
 </head>
 <body>
@@ -106,6 +88,7 @@
     </div>
 
     <script>
+        // Helpers for LocalStorage
         function saveToLocalStorage(key, data) {
             localStorage.setItem(key, JSON.stringify(data));
         }
@@ -114,6 +97,16 @@
             return JSON.parse(localStorage.getItem(key)) || [];
         }
 
+        function updateStokProduk(productName, qty) {
+            const produk = getFromLocalStorage("produk");
+            const produkIndex = produk.findIndex(p => p.nama === productName);
+            if (produkIndex !== -1) {
+                produk[produkIndex].stok -= qty;
+                saveToLocalStorage("produk", produk);
+            }
+        }
+
+        // Navigation
         function navigate(page) {
             const content = document.getElementById("content");
             switch (page) {
@@ -127,17 +120,21 @@
             }
         }
 
+        // Pelanggan CRUD
         function showPelanggan(container) {
             const pelanggan = getFromLocalStorage("pelanggan");
             container.innerHTML = `
-                <h2>Data Pelanggan</h2>
+                <h2>Pelanggan</h2>
                 <form onsubmit="addPelanggan(event)">
                     <input type="text" id="namaPelanggan" placeholder="Nama Pelanggan" required>
                     <button type="submit">Tambah</button>
                 </form>
                 <table>
                     <thead>
-                        <tr><th>Nama Pelanggan</th><th>Aksi</th></tr>
+                        <tr>
+                            <th>Nama Pelanggan</th>
+                            <th>Aksi</th>
+                        </tr>
                     </thead>
                     <tbody>
                         ${pelanggan.map((p, i) => `
@@ -167,12 +164,75 @@
             navigate('pelanggan');
         }
 
-        /** Tambahkan fitur Produk, Transaksi, Laporan, dan Struk seperti yang sebelumnya diimplementasikan ***/
-
-        function printStruk() {
-            window.print();
+        // Produk CRUD
+        function showProduk(container) {
+            const produk = getFromLocalStorage("produk");
+            const kategori = getFromLocalStorage("kategori");
+            const supplier = getFromLocalStorage("supplier");
+            container.innerHTML = `
+                <h2>Produk</h2>
+                <form onsubmit="addProduk(event)">
+                    <input type="text" id="namaProduk" placeholder="Nama Produk" required>
+                    <input type="number" id="stokProduk" placeholder="Stok" required>
+                    <input type="number" id="hargaProduk" placeholder="Harga" required>
+                    <select id="kategoriProduk" required>
+                        <option value="">Pilih Kategori</option>
+                        ${kategori.map(k => `<option value="${k}">${k}</option>`).join('')}
+                    </select>
+                    <select id="supplierProduk" required>
+                        <option value="">Pilih Supplier</option>
+                        ${supplier.map(s => `<option value="${s}">${s}</option>`).join('')}
+                    </select>
+                    <button type="submit">Tambah</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Produk</th>
+                            <th>Stok</th>
+                            <th>Harga</th>
+                            <th>Kategori</th>
+                            <th>Supplier</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${produk.map((p, i) => `
+                            <tr>
+                                <td>${p.nama}</td>
+                                <td>${p.stok}</td>
+                                <td>${p.harga}</td>
+                                <td>${p.kategori}</td>
+                                <td>${p.supplier}</td>
+                                <td><button onclick="deleteProduk(${i})">Hapus</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
         }
 
+        function addProduk(event) {
+            event.preventDefault();
+            const nama = document.getElementById("namaProduk").value;
+            const stok = parseInt(document.getElementById("stokProduk").value);
+            const harga = parseInt(document.getElementById("hargaProduk").value);
+            const kategori = document.getElementById("kategoriProduk").value;
+            const supplier = document.getElementById("supplierProduk").value;
+            const produk = getFromLocalStorage("produk");
+            produk.push({ nama, stok, harga, kategori, supplier });
+            saveToLocalStorage("produk", produk);
+            navigate('produk');
+        }
+
+        function deleteProduk(index) {
+            const produk = getFromLocalStorage("produk");
+            produk.splice(index, 1);
+            saveToLocalStorage("produk", produk);
+            navigate('produk');
+        }
+
+        // Load default page
         navigate('pelanggan');
     </script>
 </body>
