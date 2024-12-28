@@ -1,4 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Kasir Lengkap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
 
+        #app {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            padding: 10px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: calc(100% - 20px);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Aplikasi Kasir Lengkap</h1>
+        <nav>
+            <button onclick="navigate('pelanggan')">Pelanggan</button>
+            <button onclick="navigate('produk')">Produk</button>
+            <button onclick="navigate('kategori')">Kategori</button>
+            <button onclick="navigate('supplier')">Supplier</button>
+            <button onclick="navigate('transaksi')">Transaksi</button>
+            <button onclick="navigate('laporan')">Laporan</button>
+        </nav>
+        <div id="content"></div>
+    </div>
+
+    <script>
+        // Helpers for LocalStorage
+        function saveToLocalStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function getFromLocalStorage(key) {
+            return JSON.parse(localStorage.getItem(key)) || [];
+        }
+
+        function updateStokProduk(productName, qty) {
+            const produk = getFromLocalStorage("produk");
+            const produkIndex = produk.findIndex(p => p.nama === productName);
+            if (produkIndex !== -1) {
                 produk[produkIndex].stok -= qty;
                 saveToLocalStorage("produk", produk);
             }
