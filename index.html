@@ -7,6 +7,30 @@
     <link rel="stylesheet" href="styles.css">
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const dataStorage = {
+                pelanggan: [],
+                produk: [],
+                suplier: [],
+                transaksi: [],
+                pembayaran: []
+            };
+
+            const renderList = (data, listElement) => {
+                listElement.innerHTML = '';
+                data.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Hapus';
+                    deleteButton.onclick = () => {
+                        data.splice(index, 1);
+                        renderList(data, listElement);
+                    };
+                    li.appendChild(deleteButton);
+                    listElement.appendChild(li);
+                });
+            };
+
             // Pelanggan functionality
             const pelangganForm = document.getElementById('pelangganForm');
             const pelangganList = document.getElementById('pelangganList');
@@ -15,9 +39,8 @@
                 const nama = document.getElementById('namaPelanggan').value;
                 const noHp = document.getElementById('noHp').value;
                 const alamat = document.getElementById('alamat').value;
-                const li = document.createElement('li');
-                li.textContent = `${nama} - ${noHp} - ${alamat}`;
-                pelangganList.appendChild(li);
+                dataStorage.pelanggan.push(`${nama} - ${noHp} - ${alamat}`);
+                renderList(dataStorage.pelanggan, pelangganList);
                 pelangganForm.reset();
             });
 
@@ -29,9 +52,8 @@
                 const namaProduk = document.getElementById('namaProduk').value;
                 const stok = document.getElementById('stok').value;
                 const kategori = document.getElementById('kategori').value;
-                const li = document.createElement('li');
-                li.textContent = `${namaProduk} - Stok: ${stok} - Kategori: ${kategori}`;
-                produkList.appendChild(li);
+                dataStorage.produk.push(`${namaProduk} - Stok: ${stok} - Kategori: ${kategori}`);
+                renderList(dataStorage.produk, produkList);
                 produkForm.reset();
             });
 
@@ -42,9 +64,8 @@
                 e.preventDefault();
                 const namaSuplier = document.getElementById('namaSuplier').value;
                 const alamatSuplier = document.getElementById('alamatSuplier').value;
-                const li = document.createElement('li');
-                li.textContent = `${namaSuplier} - ${alamatSuplier}`;
-                suplierList.appendChild(li);
+                dataStorage.suplier.push(`${namaSuplier} - ${alamatSuplier}`);
+                renderList(dataStorage.suplier, suplierList);
                 suplierForm.reset();
             });
 
@@ -57,9 +78,8 @@
                 const jumlahItem = document.getElementById('jumlahItem').value;
                 const status = document.getElementById('status').value;
                 const keterangan = document.getElementById('keterangan').value;
-                const li = document.createElement('li');
-                li.textContent = `${namaTransaksi} - Jumlah: ${jumlahItem} - Status: ${status} - Keterangan: ${keterangan}`;
-                transaksiList.appendChild(li);
+                dataStorage.transaksi.push(`${namaTransaksi} - Jumlah: ${jumlahItem} - Status: ${status} - Keterangan: ${keterangan}`);
+                renderList(dataStorage.transaksi, transaksiList);
                 transaksiForm.reset();
             });
 
@@ -71,9 +91,8 @@
                 const namaPembayaran = document.getElementById('namaPembayaran').value;
                 const jumlahPembayaran = document.getElementById('jumlahPembayaran').value;
                 const konfirmasiPembayaran = document.getElementById('konfirmasiPembayaran').value;
-                const li = document.createElement('li');
-                li.textContent = `${namaPembayaran} - Jumlah: ${jumlahPembayaran} - Status: ${konfirmasiPembayaran}`;
-                pembayaranList.appendChild(li);
+                dataStorage.pembayaran.push(`${namaPembayaran} - Jumlah: ${jumlahPembayaran} - Status: ${konfirmasiPembayaran}`);
+                renderList(dataStorage.pembayaran, pembayaranList);
                 pembayaranForm.reset();
             });
 
@@ -82,10 +101,10 @@
             const laporanOutput = document.getElementById('laporanOutput');
             generateLaporan.addEventListener('click', () => {
                 laporanOutput.textContent = `Laporan saat ini:
-- Pelanggan: ${pelangganList.children.length}
-- Produk: ${produkList.children.length}
-- Transaksi: ${transaksiList.children.length}
-- Pembayaran: ${pembayaranList.children.length}`;
+- Total Pelanggan: ${dataStorage.pelanggan.length}
+- Total Produk: ${dataStorage.produk.length}
+- Total Transaksi: ${dataStorage.transaksi.length}
+- Total Pembayaran: ${dataStorage.pembayaran.length}`;
             });
         });
     </script>
@@ -166,7 +185,5 @@
             <ul id="pembayaranList"></ul>
         </section>
     </main>
-
-    <script src="script.js"></script>
 </body>
 </html>
